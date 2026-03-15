@@ -1,0 +1,11 @@
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+output
+.cache
+cscope.*
+*.skel.h
+*.o
+__pycache__
