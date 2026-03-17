@@ -34,6 +34,11 @@ int int_flip_sign(struct number *self)
     return 0;
 }
 
+int int_is_zero(struct number *self)
+{
+    return *(int *)(&self->private_data) == 0;
+}
+
 int int_print(FILE *stream, struct number *self)
 {
     return fprintf(stream, "%d", *(int *)(&self->private_data));
@@ -73,6 +78,8 @@ struct number_type_ops int_ops = {
     .mul = int_mul,
     .div = int_div,
     .flip_sign = int_flip_sign,
+    .is_zero = int_is_zero,
+
     .to = {0},
     .to_arr_len = 0,
     .free = NULL,

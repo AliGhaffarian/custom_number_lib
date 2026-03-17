@@ -19,6 +19,7 @@ int complex_sub(struct number *first, struct number *second);
 int complex_mul(struct number *first, struct number *second);
 int complex_div(struct number *first, struct number *second);
 int complex_flip_sign(struct number *self);
+int complex_is_zero(struct number *self);
 
 int complex_to_int(struct number *self);
 

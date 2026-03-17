@@ -179,6 +179,19 @@ int complex_flip_sign(struct number *self)
     return 0;
 }
 
+int complex_is_zero(struct number *self)
+{
+    int is_zero = 0;
+    struct complex *self_value = (struct complex *)self->private_data;
+    is_zero = generic_is_zero(self_value->img);
+    if(is_zero)
+        return is_zero;
+
+    is_zero |= generic_is_zero(self_value->re);
+
+    return is_zero;
+}
+
 void complex_free(struct number **self)
 {
     struct complex *self_value = (struct complex *)(*self)->private_data;
@@ -216,6 +229,7 @@ struct number_type_ops complex_ops = {
     .mul = complex_mul,
     .div = complex_div,
     .flip_sign = complex_flip_sign,
+    .is_zero = complex_is_zero,
 
     .to = {0},
     .to_arr_len = 0,

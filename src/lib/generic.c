@@ -278,6 +278,18 @@ int generic_flip_sign(struct number *self)
     }
     return err;
 }
+int generic_is_zero(struct number *self)
+{
+    int is_zero = 0;
+    is_zero = self->ops->is_zero(self);
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "(");
+        self->ops->print(stdout, self);
+        printf(")");
+        printf(is_zero ? " is zero\n" : " is not zero\n");
+    }
+    return is_zero;
+}
 int generic_to(struct number *first, uint32_t type)
 {
     if(type >= first->ops->to_arr_len)

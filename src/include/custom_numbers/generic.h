@@ -25,6 +25,7 @@ struct number_type_ops {
     int (*mul)(struct number *first, struct number *second);
     int (*div)(struct number *first, struct number *second);
     int (*flip_sign)(struct number *self);
+    int (*is_zero)(struct number *self);
     int (*to[_RESERVERD_NUM_SIZE])(struct number *self);
     uint32_t to_arr_len;
 
@@ -66,4 +67,5 @@ int generic_sub(struct number *first, struct number *second);
 int generic_mul(struct number *first, struct number *second);
 int generic_div(struct number *first, struct number *second);
 int generic_flip_sign(struct number *self);
+int generic_is_zero(struct number *self);
 int generic_to(struct number *first, uint32_t type);
