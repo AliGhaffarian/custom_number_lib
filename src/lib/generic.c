@@ -261,6 +261,23 @@ int generic_div(struct number *first, struct number *second)
     }
     return err;
 }
+int generic_flip_sign(struct number *self)
+{
+    int err = 0;
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "(");
+        self->ops->print(stdout, self);
+        printf(") * (");
+        printf("-1 )");
+    }
+    err = self->ops->flip_sign(self);
+    if(current_log_level == LOG_DEBUG) {
+        printf(" = ");
+        self->ops->print(stdout, self);
+        puts("");
+    }
+    return err;
+}
 int generic_to(struct number *first, uint32_t type)
 {
     if(type >= first->ops->to_arr_len)

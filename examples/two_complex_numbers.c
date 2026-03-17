@@ -23,4 +23,6 @@ int main()
 
     three->ops->print(stdout, three);
     puts("");
+
+    generic_flip_sign(three);
 }

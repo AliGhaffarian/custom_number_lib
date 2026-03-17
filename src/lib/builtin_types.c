@@ -28,6 +28,12 @@ int int_div(struct number *first, struct number *second)
     return 0;
 }
 
+int int_flip_sign(struct number *self)
+{
+    *(int *)(&self->private_data) *= -1;
+    return 0;
+}
+
 int int_print(FILE *stream, struct number *self)
 {
     return fprintf(stream, "%d", *(int *)(&self->private_data));
@@ -66,6 +72,7 @@ struct number_type_ops int_ops = {
     .sub = int_sub,
     .mul = int_mul,
     .div = int_div,
+    .flip_sign = int_flip_sign,
     .to = {0},
     .to_arr_len = 0,
     .free = NULL,

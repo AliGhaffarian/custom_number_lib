@@ -166,6 +166,19 @@ int complex_mul(struct number *first, struct number *second)
 // TODO:
 int complex_div(struct number *first, struct number *second) {}
 
+int complex_flip_sign(struct number *self)
+{
+    int err = 0;
+    struct complex *self_value = (struct complex *)self->private_data;
+    err = generic_flip_sign(self_value->img);
+    if(err)
+        return err;
+    err = generic_flip_sign(self_value->re);
+    if(err)
+        return err;
+    return 0;
+}
+
 void complex_free(struct number **self)
 {
     struct complex *self_value = (struct complex *)(*self)->private_data;
@@ -202,6 +215,7 @@ struct number_type_ops complex_ops = {
     .sub = complex_sub,
     .mul = complex_mul,
     .div = complex_div,
+    .flip_sign = complex_flip_sign,
 
     .to = {0},
     .to_arr_len = 0,
