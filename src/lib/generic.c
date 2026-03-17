@@ -290,12 +290,34 @@ int generic_is_zero(struct number *self)
     }
     return is_zero;
 }
-int generic_to(struct number *first, uint32_t type)
+int generic_to(struct number *self, uint32_t type)
 {
-    if(type >= first->ops->to_arr_len)
-        return 1;
-    if(first->ops->to[type] == NULL)
-        return 1;
+    int err = 1;
 
-    return first->ops->to[type](first);
+    if(self->type == type) {
+        if(current_log_level) {
+            logger(LOG_DEBUG, stdout, "does not need conversion: (");
+            self->ops->print(stdout, self);
+            puts("");
+        }
+        return 0;
+    }
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "(");
+        self->ops->print(stdout, self);
+        printf(") to type %d", type);
+    }
+    if(type >= self->ops->to_arr_len)
+        goto after_convertion;
+    if(self->ops->to[type] == NULL)
+        goto after_convertion;
+
+    err = self->ops->to[type](self);
+after_convertion:
+    if(current_log_level == LOG_DEBUG) {
+        printf(" = (");
+        self->ops->print(stdout, self);
+        printf(") err = %d\n", err);
+    }
+    return err;
 }

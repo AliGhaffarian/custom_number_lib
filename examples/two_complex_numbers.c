@@ -27,4 +27,7 @@ int main()
     generic_flip_sign(three);
     generic_is_zero(three);
     generic_is_zero(make_number_from_two_ints(NUMBER_TYPE_COMPLEX, 0, 0));
+
+    generic_to(
+        make_number_from_two_ints(NUMBER_TYPE_COMPLEX, 1, 0), NUMBER_TYPE_INT);
 }

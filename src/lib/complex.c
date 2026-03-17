@@ -1,3 +1,4 @@
+#include <custom_numbers/builtin_types.h>
 #include <custom_numbers/complex.h>
 #include <custom_numbers/logger.h>
 #include <stdarg.h>
@@ -216,6 +217,39 @@ int complex_print(FILE *stream, struct number *self)
     return ret;
 }
 
+int complex_to_int(struct number *self)
+{
+    int ret = 0;
+    struct complex *self_value = (struct complex *)self->private_data;
+    int converted = 0;
+
+    if(self_value->img->ops->is_zero(self_value->img) != 1) {
+        if(current_log_level == LOG_DEBUG) {
+            logger(LOG_DEBUG, stdout, "cannot convert (");
+            self->ops->print(stdout, self);
+            printf(") to int, img is not zero\n");
+        }
+        return 1;
+    }
+    if(self_value->re->ops->to[NUMBER_TYPE_INT] == NULL)
+        return 1;
+    self_value->re->ops->to[NUMBER_TYPE_INT](self_value->re);
+
+copy_re:
+    converted = *(int *)&self_value->re->private_data;
+
+    generic_free(&self_value->img);
+    generic_free(&self_value->re);
+    free(self->private_data);
+
+    *(int *)&self->private_data = converted;
+
+    self->ops = &int_ops;
+    self->type = NUMBER_TYPE_INT;
+
+    return 0;
+}
+
 struct number_type_ops complex_ops = {
     .type = NUMBER_TYPE_COMPLEX,
     .custom_new = complex_new,
@@ -231,8 +265,11 @@ struct number_type_ops complex_ops = {
     .flip_sign = complex_flip_sign,
     .is_zero = complex_is_zero,
 
-    .to = {0},
-    .to_arr_len = 0,
+    .to =
+        {
+            [NUMBER_TYPE_INT] = complex_to_int,
+        },
+    .to_arr_len = _RESERVERD_NUM_SIZE,
 
     .free = complex_free,
 };
