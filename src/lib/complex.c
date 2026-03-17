@@ -164,8 +164,64 @@ int complex_mul(struct number *first, struct number *second)
     return err;
 }
 
-// TODO:
-int complex_div(struct number *first, struct number *second) {}
+int complex_div(struct number *first, struct number *second)
+{
+    struct complex *second_value = second->private_data;
+    struct complex *first_value = first->private_data;
+    int err = 0;
+    _free_custom_number_ struct number *second_flippedre,
+        *minus_re2 = NULL, *re2p2 = NULL, *img2p2 = NULL;
+    struct complex *second_flippedre_value = NULL;
+
+    second_flippedre = generic_clone(second);
+    if(second_flippedre == NULL)
+        return 1;
+
+    second_flippedre_value = second_flippedre->private_data;
+
+    err = generic_flip_sign(second_flippedre_value->re);
+    if(err)
+        return err;
+
+    minus_re2 = generic_clone(second_flippedre_value->re);
+    if(minus_re2 == NULL)
+        return 1;
+
+    re2p2 = generic_clone(second_value->re);
+    if(re2p2 == NULL)
+        return 1;
+
+    err = generic_mul(re2p2, re2p2);
+    if(err)
+        return err;
+
+    img2p2 = generic_clone(second_value->img);
+    if(img2p2 == NULL)
+        return 1;
+
+    err = generic_mul(img2p2, img2p2);
+    if(err)
+        return err;
+
+    // from now on, re2p2 is re2p2 - img2p2
+    err = generic_sub(re2p2, img2p2);
+    if(err)
+        return err;
+
+    err = generic_mul(first, second_flippedre);
+    if(err)
+        return err;
+
+    err = generic_div(first_value->re, re2p2);
+    if(err)
+        return err;
+
+    err = generic_div(first_value->img, re2p2);
+    if(err)
+        return err;
+
+    return err;
+}
 
 int complex_flip_sign(struct number *self)
 {
