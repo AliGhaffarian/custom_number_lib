@@ -249,7 +249,7 @@ int complex_is_zero(struct number *self)
     return is_zero;
 }
 
-void complex_free(struct number **self)
+void complex_free_private(struct number **self)
 {
     struct complex *self_value = (struct complex *)(*self)->private_data;
 
@@ -257,8 +257,6 @@ void complex_free(struct number **self)
     generic_free(&self_value->re);
 
     free((*self)->private_data);
-    free(*self);
-    *self = NULL;
 }
 
 int complex_print(FILE *stream, struct number *self)
@@ -327,7 +325,7 @@ struct number_type_ops complex_ops = {
         },
     .to_arr_len = _RESERVERD_NUM_SIZE,
 
-    .free = complex_free,
+    .free_private = complex_free_private,
 };
 
 void __attribute__((constructor)) _custom_numbers_complex_init()

@@ -82,7 +82,7 @@ struct number_type_ops int_ops = {
 
     .to = {0},
     .to_arr_len = 0,
-    .free = NULL,
+    .free_private = NULL,
 };
 
 void __attribute__((constructor)) _custom_numbers_builtin_types_init()

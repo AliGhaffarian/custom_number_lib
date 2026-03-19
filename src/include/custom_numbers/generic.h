@@ -29,7 +29,7 @@ struct number_type_ops {
     int (*to[_RESERVERD_NUM_SIZE])(struct number *self);
     uint32_t to_arr_len;
 
-    void (*free)(struct number **n);
+    void (*free_private)(struct number **n);
 };
 
 struct number {
