@@ -298,9 +298,6 @@ copy_re:
 
     *(int *)&self->private_data = converted;
 
-    self->ops = &int_ops;
-    self->type = NUMBER_TYPE_INT;
-
     return 0;
 }
 

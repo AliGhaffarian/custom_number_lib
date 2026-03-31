@@ -297,6 +297,7 @@ int generic_is_zero(struct number *self)
 int generic_to(struct number *self, uint32_t type)
 {
     int err = 1;
+    struct number_type_ops *type_ops = NULL;
 
     if(self->type == type) {
         if(current_log_level) {
@@ -324,6 +325,14 @@ int generic_to(struct number *self, uint32_t type)
         goto after_convertion;
 
     err = self->ops->to[type](self);
+    if(err)
+        goto after_convertion;
+
+    type_ops = lookup_type_ops(type);
+    // type_ops can't be NULL here, since self->ops->to[type] is not NULL
+    self->ops = type_ops;
+    self->type = type;
+
 after_convertion:
     if(current_log_level == LOG_DEBUG) {
         printf(" = (");
