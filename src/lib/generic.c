@@ -1,5 +1,6 @@
 #include <custom_numbers/generic.h>
 #include <custom_numbers/logger.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -302,6 +303,13 @@ int generic_to(struct number *self, uint32_t type)
         }
         return 0;
     }
+
+    if(self->ops->to[type] == NULL) {
+        errno = ENOTSUP;
+        err = errno;
+        goto after_convertion;
+    }
+
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, "(");
         self->ops->print(stdout, self);
