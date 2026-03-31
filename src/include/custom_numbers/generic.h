@@ -62,6 +62,7 @@ extern struct _number_type_ops_linked_list_info {
     uint32_t *registered_type_arr;
 } number_type_ops_linked_list_info;
 
+struct number_type_ops *lookup_type_ops(uint32_t type);
 int generic_add(struct number *first, struct number *second);
 int generic_sub(struct number *first, struct number *second);
 int generic_mul(struct number *first, struct number *second);

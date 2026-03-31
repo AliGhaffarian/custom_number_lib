@@ -154,16 +154,13 @@ struct number *generic_clone(struct number *n)
 
 struct number *make_number_from_int(uint32_t type, int n)
 {
-    struct node *elem = NULL;
     struct number_type_ops *ops = NULL;
 
     if(is_registered(type) == 0) {
         return NULL;
     }
 
-    elem = linked_list_get_at(number_type_ops_linked_list, type);
-
-    ops = (struct number_type_ops *)elem->data;
+    ops = lookup_type_ops(type);
 
     if(ops->from_int == NULL)
         return NULL;
@@ -173,21 +170,27 @@ struct number *make_number_from_int(uint32_t type, int n)
 
 struct number *make_number_from_two_ints(uint32_t type, int a, int b)
 {
-    struct node *elem = NULL;
     struct number_type_ops *ops = NULL;
 
     if(is_registered(type) == 0) {
         return NULL;
     }
 
-    elem = linked_list_get_at(number_type_ops_linked_list, type);
-
-    ops = (struct number_type_ops *)elem->data;
+    ops = lookup_type_ops(type);
 
     if(ops->from_int == NULL)
         return NULL;
 
     return ops->from_int(a, b);
+}
+
+struct number_type_ops *lookup_type_ops(uint32_t type)
+{
+    if(type > number_type_ops_linked_list_info.len)
+        return NULL;
+    if(number_type_ops_linked_list_info.registered_type_arr[type] == 0)
+        return NULL;
+    return linked_list_get_at(number_type_ops_linked_list, type)->data;
 }
 
 int generic_add(struct number *first, struct number *second)
