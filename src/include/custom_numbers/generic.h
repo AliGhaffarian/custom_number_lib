@@ -12,24 +12,29 @@ enum RESERVED_NUM_TYPES {
     _RESERVERD_NUM_SIZE,
 };
 
+/**
+ * @brief specify operations on the type. Mark not implemented with NULL.
+ */
 struct number_type_ops {
+    // clang-format off
     uint32_t type;
-    struct number *(*custom_new)();
-    struct number *(*from_int)(int, ...);
-    struct number *(*from_str)(char *);
+    struct number *(*custom_new)();                             /** construct a zero instance */
+    struct number *(*from_int)(int, ...);                       /** construct from int. each type can require different amount of arguments */
+    struct number *(*from_str)(char *str);                      /** parse str into an instance */
     struct number *(*clone)(struct number *self);
     int (*print)(FILE *stream, struct number *self);
 
-    int (*add)(struct number *first, struct number *second);
-    int (*sub)(struct number *first, struct number *second);
-    int (*mul)(struct number *first, struct number *second);
-    int (*div)(struct number *first, struct number *second);
+    int (*add)(struct number *first, struct number *second);    /** add second to first, store in first */
+    int (*sub)(struct number *first, struct number *second);    /** subtract second from first, store in first */
+    int (*mul)(struct number *first, struct number *second);    /** multiply first and second, store in first */
+    int (*div)(struct number *first, struct number *second);    /** divide first and second, store in first */
     int (*flip_sign)(struct number *self);
     int (*is_zero)(struct number *self);
-    int (*to[_RESERVERD_NUM_SIZE])(struct number *self);
+    int (*to[_RESERVERD_NUM_SIZE])(struct number *self);        /** convert private_data to the type specified by the offset */
     uint32_t to_arr_len;
 
     void (*free_private)(struct number **n);
+    // clang-format on
 };
 
 struct number {
