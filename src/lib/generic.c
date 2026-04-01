@@ -341,3 +341,11 @@ after_convertion:
     }
     return err;
 }
+
+struct number *make_number_from_str(uint32_t type, char *n)
+{
+    struct number_type_ops *ops = lookup_type_ops(type);
+    if(!ops->from_str)
+        return NULL;
+    return ops->from_str(n);
+}
