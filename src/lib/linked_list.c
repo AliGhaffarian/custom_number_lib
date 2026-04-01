@@ -110,3 +110,17 @@ struct node *linked_list_get_at(struct node *head, int at)
     }
     return current_node;
 }
+
+void linked_list_push_front(struct node **head, struct node **elem)
+{
+    (*elem)->next = move((void **)head);
+
+    *head = move((void **)elem);
+}
+
+void linked_list_push_front_ref(struct node **head, struct node **elem)
+{
+    (*elem)->next = *head;
+
+    *head = *elem;
+}
