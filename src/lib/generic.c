@@ -70,19 +70,33 @@ int register_number_type_ops(struct number_type_ops *ops)
     if(ops->type < _RESERVERD_NUM_SIZE) {
         err = linked_list_insert_at(
             &number_type_ops_linked_list, &node_ops, ops->type);
-        if(err)
+        if(err) {
+            logger(
+                LOG_DEBUG,
+                stdout,
+                "failed to insert at number_type_ops_linked_list %d\n",
+                ops->type);
             goto fail;
+        }
         did_insert = 1;
         inserted_at = ops->type;
     } else {
         available_typeid = first_available_typeid();
-        if(available_typeid == 0)
+        if(available_typeid == 0) {
+            logger(LOG_DEBUG, stdout, "failed to find an available_typeid\n");
             goto fail;
+        }
 
         err = linked_list_insert_at(
             &number_type_ops_linked_list, &node_ops, available_typeid);
-        if(err)
+        if(err) {
+            logger(
+                LOG_DEBUG,
+                stdout,
+                "failed to insert at number_type_ops_linked_list %d\n",
+                ops->type);
             goto fail;
+        }
         did_insert = 1;
         inserted_at = available_typeid;
     }
@@ -93,8 +107,19 @@ int register_number_type_ops(struct number_type_ops *ops)
             (ops->type + 1) *
                 sizeof(*number_type_ops_linked_list_info.registered_type_arr));
 
-        if(alloc_result == number_type_ops_linked_list_info.registered_type_arr)
+        if(alloc_result ==
+               number_type_ops_linked_list_info.registered_type_arr &&
+           errno) {
+            logger(
+                LOG_DEBUG,
+                stdout,
+                "failed to realloc "
+                "number_type_ops_linked_list_info.registered_type_arr for "
+                "type: %d: %s\n",
+                ops->type,
+                strerror(errno));
             goto fail;
+        }
         number_type_ops_linked_list_info.registered_type_arr = alloc_result;
 
         number_type_ops_linked_list_info.len = ops->type + 1;
