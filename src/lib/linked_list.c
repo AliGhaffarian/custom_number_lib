@@ -62,13 +62,12 @@ void linked_list_free(struct node **head)
     *head = NULL;
 }
 
-int linked_list_insert_at(struct node **head, struct node **to_insert, int at)
+int linked_list_replace_at(struct node **head, struct node **to_insert, int at)
 {
     int i = 0;
     struct node *current_node = NULL;
     struct node *node_before_at = NULL;
 
-    // todo: just insert, don't free
     if(at == 0) {
         if(*head)
             (*to_insert)->next = move((void **)&(*head)->next);
