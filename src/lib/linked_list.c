@@ -5,11 +5,15 @@
 void linked_list_append(struct node **head, struct node **to_append)
 {
     struct node **ptr_of_interest = head;
+    struct node *prev_node = NULL;
 
-    while(*ptr_of_interest != (struct node *)NULL)
+    while(*ptr_of_interest != (struct node *)NULL) {
+        prev_node = *ptr_of_interest;
         ptr_of_interest = &(*ptr_of_interest)->next;
+    }
 
     *(ptr_of_interest) = *to_append;
+    (*ptr_of_interest)->prev = prev_node;
     *to_append = NULL;
 }
 
@@ -20,6 +24,7 @@ struct node *linked_list_make_node(void **data)
         return (struct node *)NULL;
 
     tmp_node->next = (struct node *)NULL;
+    tmp_node->prev = (struct node *)NULL;
     if(data) {
         tmp_node->data = move(data);
     } else
@@ -35,6 +40,7 @@ struct node *linked_list_make_node_ref(void *data)
         return (struct node *)NULL;
 
     tmp_node->next = (struct node *)NULL;
+    tmp_node->prev = (struct node *)NULL;
     if(data) {
         tmp_node->data = data;
     } else
@@ -62,6 +68,7 @@ int linked_list_insert_at(struct node **head, struct node **to_insert, int at)
     struct node *current_node = NULL;
     struct node *node_before_at = NULL;
 
+    // todo: just insert, don't free
     if(at == 0) {
         if(*head)
             (*to_insert)->next = move((void **)&(*head)->next);
@@ -77,10 +84,14 @@ int linked_list_insert_at(struct node **head, struct node **to_insert, int at)
         *head = linked_list_make_node(NULL);
     current_node = *head;
     while(i < at - 1) {
-        if(current_node->next == NULL)
+        if(current_node->next == NULL) {
             current_node->next = linked_list_make_node(NULL);
-        if(current_node->next == NULL)
-            return 1;
+
+            if(current_node->next == NULL)
+                return 1;
+
+            current_node->next->prev = current_node;
+        }
 
         current_node = current_node->next;
 
@@ -93,6 +104,7 @@ int linked_list_insert_at(struct node **head, struct node **to_insert, int at)
         free(node_before_at->next);
     }
 
+    (*to_insert)->prev = node_before_at;
     node_before_at->next = move((void **)to_insert);
 
     return 0;
