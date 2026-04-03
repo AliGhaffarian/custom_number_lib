@@ -367,6 +367,60 @@ after_convertion:
     return err;
 }
 
+int generic_cmp(struct number *first, struct number *second)
+{
+    int cmp = -2;
+    char *cmp_char = "?";
+    if(first->type != second->type) {
+        logger(
+            LOG_ERROR,
+            stdout,
+            "comparison not supported between distinct types\n");
+        errno = ENOTSUP;
+        return -2;
+    }
+
+    if(!first->ops->cmp) {
+        logger(
+            LOG_ERROR,
+            stdout,
+            "comparison not supported for type: %d\n",
+            first->type);
+        errno = ENOTSUP;
+        return -2;
+    }
+
+    cmp = first->ops->cmp(first, second);
+
+    switch(cmp) {
+    case -1: {
+        cmp_char = ">";
+        break;
+    }
+    case 0: {
+        cmp_char = "=";
+        break;
+    }
+    case 1: {
+        cmp_char = "<";
+        break;
+    }
+    default: {
+        cmp_char = "error";
+        break;
+    }
+    }
+
+    if(current_log_level == LOG_DEBUG) {
+        first->ops->print(stdout, first);
+        printf(" %s ", cmp_char);
+        second->ops->print(stdout, second);
+        puts("");
+    }
+
+    return cmp;
+}
+
 struct number *make_number_from_str(uint32_t type, char *n)
 {
     struct number_type_ops *ops = lookup_type_ops(type);
