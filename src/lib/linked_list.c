@@ -124,3 +124,20 @@ void linked_list_push_front_ref(struct node **head, struct node **elem)
 
     *head = *elem;
 }
+
+struct node *linked_list_get_tail(struct node *head)
+{
+    if(!head)
+        return NULL;
+    if(!head->next)
+        return head;
+
+    struct node *current_node = head;
+    struct node *next_node = head->next;
+
+    while(next_node) {
+        current_node = next_node;
+        next_node = next_node->next;
+    }
+    return current_node;
+}
