@@ -249,14 +249,14 @@ int complex_is_zero(struct number *self)
     return is_zero;
 }
 
-void complex_free_private(struct number **self)
+void complex_free_private(struct number *self)
 {
-    struct complex *self_value = (struct complex *)(*self)->private_data;
+    struct complex *self_value = (struct complex *)self->private_data;
 
     generic_free(&self_value->img);
     generic_free(&self_value->re);
 
-    free((*self)->private_data);
+    free(self->private_data);
 }
 
 int complex_print(FILE *stream, struct number *self)

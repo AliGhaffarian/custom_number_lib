@@ -68,7 +68,7 @@ int register_number_type_ops(struct number_type_ops *ops)
         goto fail;
 
     if(ops->type < _RESERVERD_NUM_SIZE) {
-        err = linked_list_insert_at(
+        err = linked_list_replace_at(
             &number_type_ops_linked_list, &node_ops, ops->type);
         if(err) {
             logger(
@@ -87,7 +87,7 @@ int register_number_type_ops(struct number_type_ops *ops)
             goto fail;
         }
 
-        err = linked_list_insert_at(
+        err = linked_list_replace_at(
             &number_type_ops_linked_list, &node_ops, available_typeid);
         if(err) {
             logger(
@@ -135,7 +135,7 @@ fail:
         return 1;
 
     if(did_insert)
-        linked_list_insert_at(
+        linked_list_replace_at(
             &number_type_ops_linked_list, &empty_node, inserted_at);
     free(node_ops);
 
@@ -148,7 +148,7 @@ void generic_free(struct number **n)
         return;
 
     if((*n)->ops->free_private)
-        (*n)->ops->free_private(n);
+        (*n)->ops->free_private(*n);
 
     free((*n));
 

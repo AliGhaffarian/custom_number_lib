@@ -23,7 +23,7 @@ int complex_is_zero(struct number *self);
 
 int complex_to_int(struct number *self);
 
-void complex_free_private(struct number **self);
+void complex_free_private(struct number *self);
 
 extern struct number_type_ops complex_ops;
 

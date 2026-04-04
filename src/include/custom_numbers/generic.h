@@ -9,6 +9,7 @@ enum RESERVED_NUM_TYPES {
     NUMBER_TYPE_INT,
     NUMBER_TYPE_FLOAT,
     NUMBER_TYPE_COMPLEX,
+    NUMBER_TYPE_BIGNUM,
     _RESERVERD_NUM_SIZE,
 };
 
@@ -34,7 +35,7 @@ struct number_type_ops {
     int (*to[_RESERVERD_NUM_SIZE])(struct number *self);        /** convert private_data to the type specified by the offset */
     uint32_t to_arr_len;
 
-    void (*free_private)(struct number **n);
+    void (*free_private)(struct number *n);
     // clang-format on
 };
 
