@@ -146,6 +146,8 @@ void generic_free(struct number **n)
 {
     if(n == NULL)
         return;
+    if(*n == NULL)
+        return;
 
     if((*n)->ops->free_private)
         (*n)->ops->free_private(*n);
