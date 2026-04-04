@@ -32,6 +32,7 @@ struct number_type_ops {
     int (*flip_sign)(struct number *self);
     int (*is_zero)(struct number *self);
     int (*cmp)(struct number *first, struct number *second);    /** -1 if first is greater, 0 if equal, 1 if second is greater */
+    int (*u_cmp)(struct number *first, struct number *second);  /** -1 if first is above, 0 if equal, 1 if second is above */
     int (*to[_RESERVERD_NUM_SIZE])(struct number *self);        /** convert private_data to the type specified by the offset */
     uint32_t to_arr_len;
 
@@ -78,3 +79,4 @@ int generic_flip_sign(struct number *self);
 int generic_is_zero(struct number *self);
 int generic_to(struct number *self, uint32_t type);
 int generic_cmp(struct number *self, struct number *type);
+int generic_u_cmp(struct number *self, struct number *type);
