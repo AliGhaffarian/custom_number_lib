@@ -16,6 +16,8 @@ struct node *linked_list_get_at(struct node *, int);
 struct node *linked_list_get_tail(struct node *);
 void linked_list_push_front(struct node **, struct node **);
 void linked_list_push_front_ref(struct node **head, struct node **elem);
+struct node *
+linked_list_clone(struct node *self, void *(*private_clone)(void *));
 
 #define _free_linked_list_ __attribute__((__cleanup__(linked_list_free)))
 #endif

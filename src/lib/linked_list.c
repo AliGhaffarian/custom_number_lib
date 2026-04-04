@@ -152,3 +152,32 @@ struct node *linked_list_get_tail(struct node *head)
     }
     return current_node;
 }
+
+struct node *
+linked_list_clone(struct node *self, void *(*private_clone)(void *))
+{
+    struct node *cloned_current_node = NULL;
+    void *cloned_private_data = NULL;
+    struct node *clone_head = NULL;
+    struct node *self_current_node = self;
+
+    while(self_current_node) {
+        if(private_clone) {
+            cloned_private_data = private_clone(self_current_node->data);
+            if(!cloned_private_data)
+                goto fail;
+        } else
+            cloned_private_data = self_current_node->data;
+
+        cloned_current_node = linked_list_make_node(&cloned_private_data);
+        if(!cloned_current_node)
+            goto fail;
+
+        linked_list_append(&clone_head, &cloned_current_node);
+        self_current_node = self_current_node->next;
+    }
+    return clone_head;
+fail:
+    // TODO: free if error
+    return NULL;
+}
