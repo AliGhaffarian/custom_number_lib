@@ -553,6 +553,11 @@ int bignum_flip_sign(struct number *self)
     self_instance->sign = !self_instance->sign;
     return 0;
 }
+int bignum_get_sign(struct number *self)
+{
+    struct bignum_instance *self_instance = self->private_data;
+    return self_instance->sign;
+}
 int bignum_is_zero(struct number *self)
 {
     struct bignum_instance *self_instance = self->private_data;
@@ -665,6 +670,7 @@ struct number_type_ops bignum_ops = {
     .div = bignum_div,
 
     .flip_sign = bignum_flip_sign,
+    .get_sign = bignum_get_sign,
     .is_zero = bignum_is_zero,
 
     .to_arr_len = _RESERVERD_NUM_SIZE,

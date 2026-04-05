@@ -309,6 +309,17 @@ int generic_flip_sign(struct number *self)
     }
     return err;
 }
+int generic_get_sign(struct number *self)
+{
+    int sign = 0;
+    sign = self->ops->get_sign(self);
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "sign of ");
+        self->ops->print(stdout, self);
+        printf(" is %d\n", sign);
+    }
+    return sign;
+}
 int generic_is_zero(struct number *self)
 {
     int is_zero = 0;
