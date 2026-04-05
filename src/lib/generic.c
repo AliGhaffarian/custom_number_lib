@@ -211,6 +211,38 @@ struct number *make_number_from_two_ints(uint32_t type, int a, int b)
     return ops->from_int(a, b);
 }
 
+struct number *make_number_from_number(uint32_t type, struct number *n)
+{
+    struct number_type_ops *ops = NULL;
+
+    if(is_registered(type) == 0) {
+        return NULL;
+    }
+
+    ops = lookup_type_ops(type);
+
+    if(ops->from_int == NULL)
+        return NULL;
+
+    return ops->from_number(n);
+}
+struct number *
+make_number_from_two_numbers(uint32_t type, struct number *a, struct number *b)
+{
+    struct number_type_ops *ops = NULL;
+
+    if(is_registered(type) == 0) {
+        return NULL;
+    }
+
+    ops = lookup_type_ops(type);
+
+    if(ops->from_int == NULL)
+        return NULL;
+
+    return ops->from_number(a, b);
+}
+
 struct number_type_ops *lookup_type_ops(uint32_t type)
 {
     if(type > number_type_ops_linked_list_info.len)
