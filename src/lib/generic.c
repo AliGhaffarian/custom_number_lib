@@ -414,6 +414,7 @@ int generic_cmp(struct number *first, struct number *second)
     }
 
     if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "");
         first->ops->print(stdout, first);
         printf(" %s ", cmp_char);
         second->ops->print(stdout, second);
@@ -468,6 +469,7 @@ int generic_u_cmp(struct number *first, struct number *second)
     }
 
     if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "");
         first->ops->print(stdout, first);
         printf(" %s ", cmp_char);
         second->ops->print(stdout, second);
