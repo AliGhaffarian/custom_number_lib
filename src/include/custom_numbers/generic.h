@@ -86,5 +86,5 @@ int generic_flip_sign(struct number *self);
 int generic_get_sign(struct number *self);
 int generic_is_zero(struct number *self);
 int generic_to(struct number *self, uint32_t type);
-int generic_cmp(struct number *self, struct number *type);
-int generic_u_cmp(struct number *self, struct number *type);
+int generic_cmp(struct number *first, struct number *second);
+int generic_u_cmp(struct number *first, struct number *second);
