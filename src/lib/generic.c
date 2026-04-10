@@ -211,7 +211,7 @@ struct number *make_number_from_two_ints(uint32_t type, int a, int b)
     return ops->from_int(a, b);
 }
 
-struct number *make_number_from_number(uint32_t type, struct number *n)
+struct number *make_number_from_number(uint32_t type, struct number **n)
 {
     struct number_type_ops *ops = NULL;
 
@@ -226,8 +226,8 @@ struct number *make_number_from_number(uint32_t type, struct number *n)
 
     return ops->from_number(n);
 }
-struct number *
-make_number_from_two_numbers(uint32_t type, struct number *a, struct number *b)
+struct number *make_number_from_two_numbers(
+    uint32_t type, struct number **a, struct number **b)
 {
     struct number_type_ops *ops = NULL;
 

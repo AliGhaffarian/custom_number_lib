@@ -21,7 +21,7 @@ struct number_type_ops {
     uint32_t type;
     struct number *(*custom_new)();                             /** construct a zero instance */
     struct number *(*from_int)(int, ...);                       /** construct from int. each type can require different amount of arguments */
-    struct number *(*from_number)(struct number *, ...);        /** construct from number object. each type can require different amount of arguments */
+    struct number *(*from_number)(struct number **, ...);        /** construct from number object. each type can require different amount of arguments */
     struct number *(*from_str)(char *str);                      /** parse str into an instance */
     struct number *(*clone)(struct number *self);
     int (*print)(FILE *stream, struct number *self);
@@ -63,9 +63,9 @@ struct number *make_number(uint32_t type);
 struct number *make_number_from_int(uint32_t type, int n);
 struct number *make_number_from_two_ints(uint32_t type, int a, int b);
 struct number *make_number_from_str(uint32_t type, char *n);
-struct number *make_number_from_number(uint32_t type, struct number *n);
-struct number *
-make_number_from_two_numbers(uint32_t type, struct number *a, struct number *b);
+struct number *make_number_from_number(uint32_t type, struct number **n);
+struct number *make_number_from_two_numbers(
+    uint32_t type, struct number **a, struct number **b);
 
 // this helps track what types are registered, in case we want to restrict
 // registering types. this should've been stored in the head and i should've
