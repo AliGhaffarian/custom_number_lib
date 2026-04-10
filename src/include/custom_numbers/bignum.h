@@ -30,6 +30,7 @@ int bignum_sub(struct number *first, struct number *second);
 static int _bignum_sub(struct number *first, struct number *second);
 int bignum_mul(struct number *first, struct number *second);
 int bignum_div(struct number *first, struct number *second);
+int bignum_rem(struct number *first, struct number *second);
 int bignum_flip_sign(struct number *self);
 int bignum_get_sign(struct number *self);
 int bignum_is_zero(struct number *self);

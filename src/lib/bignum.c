@@ -214,13 +214,19 @@ int bignum_add(struct number *first, struct number *second)
     struct node *second_node_copy = NULL;
     struct node *tmp_node = NULL;
     struct node *current_node_second = second_instance->bignum_elem_linked_list;
+    _free_custom_number_ struct number *second_clone = NULL;
     int higher_first = 0, lower_first = 0;
     int new_lower = 0, new_higher = 0;
     int higher_second = 0, lower_second = 0;
     bool carry = 0;
 
-    if(first_instance->sign != second_instance->sign)
-        return bignum_sub(first, second);
+    if(first_instance->sign != second_instance->sign) {
+        second_clone = generic_clone(second);
+        if(!second_clone)
+            return 1;
+        generic_flip_sign(second_clone);
+        return bignum_sub(first, second_clone);
+    }
 
     while(current_node_second && current_node_first) {
         BIGNUM_ELEM_GET_DIGITS(
@@ -547,6 +553,30 @@ int bignum_div(struct number *first, struct number *second)
 
     return 0;
 }
+int bignum_rem(struct number *first, struct number *second)
+{
+    struct bignum_instance *first_instance = first->private_data;
+    struct bignum_instance *second_instance = second->private_data;
+    _free_custom_number_ struct number *clone_second = generic_clone(second);
+    _free_custom_number_ struct number *one =
+        make_number_from_int(NUMBER_TYPE_BIGNUM, 1);
+    _free_custom_number_ struct number *zero =
+        make_number_from_int(NUMBER_TYPE_BIGNUM, 0);
+    struct bignum_instance *clone_second_instance = clone_second->private_data;
+
+    if(!(clone_second && one && zero))
+        return 1;
+
+    first_instance->sign = clone_second_instance->sign = 0;
+    while(generic_cmp(first, zero) == -1) {
+        generic_sub(first, clone_second);
+    }
+
+    if(generic_cmp(first, zero) == 1)
+        generic_add(first, clone_second);
+
+    return 0;
+}
 int bignum_flip_sign(struct number *self)
 {
     struct bignum_instance *self_instance = self->private_data;
@@ -668,6 +698,7 @@ struct number_type_ops bignum_ops = {
     .sub = bignum_sub,
     .mul = bignum_mul,
     .div = bignum_div,
+    .rem = bignum_rem,
 
     .flip_sign = bignum_flip_sign,
     .get_sign = bignum_get_sign,

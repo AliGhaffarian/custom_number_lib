@@ -41,4 +41,7 @@ int main()
         make_number_from_str(NUMBER_TYPE_BIGNUM, "100"),
         make_number_from_str(NUMBER_TYPE_BIGNUM, "1"));
     generic_get_sign(make_number_from_str(NUMBER_TYPE_BIGNUM, "-1"));
+    generic_rem(
+        make_number_from_str(NUMBER_TYPE_BIGNUM, "10"),
+        make_number_from_str(NUMBER_TYPE_BIGNUM, "3"));
 }
