@@ -30,6 +30,7 @@ struct number_type_ops {
     int (*sub)(struct number *first, struct number *second);    /** subtract second from first, store in first */
     int (*mul)(struct number *first, struct number *second);    /** multiply first and second, store in first */
     int (*div)(struct number *first, struct number *second);    /** divide first and second, store in first */
+    int (*rem)(struct number *first, struct number *second);    /** divide first and second, store remainder in first */
     int (*flip_sign)(struct number *self);
     int (*get_sign)(struct number *self);                       /** 0 if '+', 1 if '-', error otherwise */
     int (*is_zero)(struct number *self);
@@ -80,6 +81,7 @@ int generic_add(struct number *first, struct number *second);
 int generic_sub(struct number *first, struct number *second);
 int generic_mul(struct number *first, struct number *second);
 int generic_div(struct number *first, struct number *second);
+int generic_rem(struct number *first, struct number *second);
 int generic_flip_sign(struct number *self);
 int generic_get_sign(struct number *self);
 int generic_is_zero(struct number *self);

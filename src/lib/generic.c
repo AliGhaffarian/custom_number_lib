@@ -324,6 +324,24 @@ int generic_div(struct number *first, struct number *second)
     }
     return err;
 }
+int generic_rem(struct number *first, struct number *second)
+{
+    int err = 0;
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "(");
+        first->ops->print(stdout, first);
+        printf("%s", ") % (");
+        first->ops->print(stdout, second);
+        printf(")");
+    }
+    err = first->ops->rem(first, second);
+    if(current_log_level == LOG_DEBUG) {
+        printf(" = ");
+        first->ops->print(stdout, first);
+        puts("");
+    }
+    return err;
+}
 int generic_flip_sign(struct number *self)
 {
     int err = 0;
