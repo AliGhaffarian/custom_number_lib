@@ -266,7 +266,7 @@ int generic_add(struct number *first, struct number *second)
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
-        puts("");
+        printf(" error: %d\n", err);
     }
     return err;
 }
@@ -284,7 +284,7 @@ int generic_sub(struct number *first, struct number *second)
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
-        puts("");
+        printf(" error: %d\n", err);
     }
     return err;
 }
@@ -302,7 +302,7 @@ int generic_mul(struct number *first, struct number *second)
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
-        puts("");
+        printf(" error: %d\n", err);
     }
     return err;
 }
@@ -320,7 +320,7 @@ int generic_div(struct number *first, struct number *second)
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
-        puts("");
+        printf(" error: %d\n", err);
     }
     return err;
 }
@@ -338,7 +338,7 @@ int generic_rem(struct number *first, struct number *second)
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
-        puts("");
+        printf(" error: %d\n", err);
     }
     return err;
 }
@@ -355,7 +355,7 @@ int generic_flip_sign(struct number *self)
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, " = ");
         self->ops->print(stdout, self);
-        puts("");
+        printf(" error: %d\n", err);
     }
     return err;
 }
@@ -391,7 +391,7 @@ int generic_to(struct number *self, uint32_t type)
         if(current_log_level) {
             logger(LOG_DEBUG, stdout, "does not need conversion: (");
             self->ops->print(stdout, self);
-            puts("");
+            printf(" error: %d\n", err);
         }
         return 0;
     }
@@ -469,7 +469,7 @@ int generic_cmp(struct number *first, struct number *second)
         break;
     }
     default: {
-        cmp_char = "error";
+        cmp_char = " error";
         break;
     }
     }
@@ -538,6 +538,27 @@ int generic_u_cmp(struct number *first, struct number *second)
     }
 
     return cmp;
+}
+struct number *generic_gcd(struct number *first, struct number *second)
+{
+    struct number *ret = NULL;
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "gcd(");
+        first->ops->print(stdout, first);
+        printf("%s", ", ");
+        first->ops->print(stdout, second);
+        printf(")");
+    }
+    ret = first->ops->gcd(first, second);
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, " = ");
+        if(!ret)
+            printf(" error ");
+        else
+            ret->ops->print(stdout, ret);
+        puts("");
+    }
+    return ret;
 }
 
 struct number *make_number_from_str(uint32_t type, char *n)
