@@ -36,6 +36,7 @@ int bignum_get_sign(struct number *self);
 int bignum_is_zero(struct number *self);
 int bignum_cmp(struct number *first, struct number *second);
 int bignum_u_cmp(struct number *first, struct number *second);
+struct number *bignum_gcd(struct number *first, struct number *second);
 
 int bignum_to_int(struct number *self);
 

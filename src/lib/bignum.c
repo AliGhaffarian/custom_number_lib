@@ -563,8 +563,12 @@ int bignum_rem(struct number *first, struct number *second)
     _free_custom_number_ struct number *zero =
         make_number_from_int(NUMBER_TYPE_BIGNUM, 0);
     struct bignum_instance *clone_second_instance = clone_second->private_data;
+    int cmp = -2;
 
     if(!(clone_second && one && zero))
+        return 1;
+
+    if(generic_is_zero(second))
         return 1;
 
     first_instance->sign = clone_second_instance->sign = 0;
@@ -660,6 +664,78 @@ int bignum_u_cmp(struct number *first, struct number *second)
     return cmp;
 }
 
+struct number *bignum_gcd(struct number *first, struct number *second)
+{
+
+    int err = 0;
+    _free_custom_number_ struct number *one =
+        make_number_from_int(first->type, 1);
+    _free_custom_number_ struct number *tmp_num = NULL;
+    _free_custom_number_ struct number *two =
+        make_number_from_int(first->type, 2);
+    struct number *gcd = NULL;
+    bool continue_looking_for_gcd = 0;
+    int cmp = generic_cmp(first, second);
+
+    switch(cmp) {
+    case 0:
+    case -1: {
+        gcd = generic_clone(second);
+        break;
+    }
+    case 1: {
+        gcd = generic_clone(first);
+        break;
+    }
+    default:
+        return NULL;
+    }
+
+    if(generic_get_sign(gcd))
+        generic_flip_sign(gcd);
+
+    if(current_log_level == LOG_DEBUG) {
+        logger(LOG_DEBUG, stdout, "gcd starting point: ");
+        gcd->ops->print(stdout, gcd);
+        puts("");
+    }
+
+    while(1) {
+        continue_looking_for_gcd = 0;
+
+        tmp_num = generic_clone(second);
+        if(!tmp_num)
+            return NULL;
+        err = generic_rem(tmp_num, gcd);
+        if(err)
+            return NULL;
+        errno = 0;
+        continue_looking_for_gcd |= (generic_is_zero(tmp_num) == 0);
+        if(errno)
+            return NULL;
+
+        tmp_num = generic_clone(first);
+        if(!tmp_num)
+            return NULL;
+        err = generic_rem(tmp_num, gcd);
+        if(err)
+            return NULL;
+        errno = 0;
+        continue_looking_for_gcd |= (generic_is_zero(tmp_num) == 0);
+        if(errno)
+            return NULL;
+
+        if(!continue_looking_for_gcd)
+            break;
+
+        err = generic_sub(gcd, one);
+        if(err)
+            return NULL;
+    }
+
+    return gcd;
+}
+
 void bignum_free_private(struct number *self)
 {
     struct bignum_instance *self_instance = self->private_data;
@@ -693,6 +769,7 @@ struct number_type_ops bignum_ops = {
 
     .cmp = bignum_cmp,
     .u_cmp = bignum_u_cmp,
+    .gcd = bignum_gcd,
 
     .add = bignum_add,
     .sub = bignum_sub,
