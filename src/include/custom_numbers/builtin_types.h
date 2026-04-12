@@ -15,4 +15,17 @@ int int_print(FILE *stream, struct number *self);
 struct number *int_new();
 extern struct number_type_ops int_ops;
 
+struct number *float_from_int(int n, ...);
+
+int float_add(struct number *first, struct number *second);
+int float_sub(struct number *first, struct number *second);
+int float_mul(struct number *first, struct number *second);
+int float_flip_sign(struct number *self);
+int float_is_zero(struct number *self);
+int float_div(struct number *first, struct number *second);
+
+int float_print(FILE *stream, struct number *self);
+struct number *float_new();
+extern struct number_type_ops float_ops;
+
 void __attribute__((constructor)) _custom_numbers_builtin_types_init();
