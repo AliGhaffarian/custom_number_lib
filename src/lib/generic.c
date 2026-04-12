@@ -264,7 +264,7 @@ int generic_add(struct number *first, struct number *second)
     }
     err = first->ops->add(first, second);
     if(current_log_level == LOG_DEBUG) {
-        printf(" = ");
+        logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
         puts("");
     }
@@ -282,7 +282,7 @@ int generic_sub(struct number *first, struct number *second)
     }
     err = first->ops->sub(first, second);
     if(current_log_level == LOG_DEBUG) {
-        printf(" = ");
+        logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
         puts("");
     }
@@ -300,7 +300,7 @@ int generic_mul(struct number *first, struct number *second)
     }
     err = first->ops->mul(first, second);
     if(current_log_level == LOG_DEBUG) {
-        printf(" = ");
+        logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
         puts("");
     }
@@ -318,7 +318,7 @@ int generic_div(struct number *first, struct number *second)
     }
     err = first->ops->div(first, second);
     if(current_log_level == LOG_DEBUG) {
-        printf(" = ");
+        logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
         puts("");
     }
@@ -336,7 +336,7 @@ int generic_rem(struct number *first, struct number *second)
     }
     err = first->ops->rem(first, second);
     if(current_log_level == LOG_DEBUG) {
-        printf(" = ");
+        logger(LOG_DEBUG, stdout, " = ");
         first->ops->print(stdout, first);
         puts("");
     }
@@ -353,7 +353,7 @@ int generic_flip_sign(struct number *self)
     }
     err = self->ops->flip_sign(self);
     if(current_log_level == LOG_DEBUG) {
-        printf(" = ");
+        logger(LOG_DEBUG, stdout, " = ");
         self->ops->print(stdout, self);
         puts("");
     }
