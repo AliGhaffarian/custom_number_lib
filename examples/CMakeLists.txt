@@ -8,3 +8,6 @@ target_link_libraries(two_complex_numbers custom_numbers)
 
 add_executable(two_bignums two_bignums.c)
 target_link_libraries(two_bignums custom_numbers)
+
+add_executable(two_rationals two_rationals.c)
+target_link_libraries(two_rationals custom_numbers)
