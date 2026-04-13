@@ -264,9 +264,11 @@ int complex_print(FILE *stream, struct number *self)
     int ret = 0;
     struct complex *self_value = (struct complex *)self->private_data;
 
+    printf("(");
     ret += self_value->re->ops->print(stdout, self_value->re);
-    ret += printf(" + j");
+    printf(") + (");
     ret += self_value->img->ops->print(stdout, self_value->img);
+    ret += printf(")j");
 
     return ret;
 }
