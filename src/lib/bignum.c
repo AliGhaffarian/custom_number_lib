@@ -276,6 +276,8 @@ int bignum_add(struct number *first, struct number *second)
             *(bignum_elem_t *)&current_node_first->data);
 
         first_tail->next = current_node_first;
+        current_node_first->prev = first_tail;
+
         first_tail = first_tail->next;
 
         current_node_first = current_node_first->next;
@@ -289,6 +291,8 @@ int bignum_add(struct number *first, struct number *second)
         BIGNUM_ELEM_SET_DIGITS(0, 1, *(bignum_elem_t *)&tmp_node->data);
 
         first_tail->next = tmp_node;
+        tmp_node->prev = first_tail;
+
         first_tail = first_tail->next;
 
         carry = 0;
@@ -499,14 +503,30 @@ int bignum_mul(struct number *first, struct number *second)
 {
     struct bignum_instance *first_instance = first->private_data;
     struct bignum_instance *second_instance = second->private_data;
+    struct bignum_instance *result_instance = second->private_data;
     _free_custom_number_ struct number *clone_second = generic_clone(second);
     _free_custom_number_ struct number *clone_first = generic_clone(first);
+    _free_custom_number_ struct number *tmp = NULL;
     struct bignum_instance *clone_second_instance = clone_second->private_data;
     _free_custom_number_ struct number *one =
         make_number_from_int(NUMBER_TYPE_BIGNUM, 1);
+    bool result_sign = first_instance->sign ^= second_instance->sign;
 
     if(!(clone_first && clone_second && one))
         return 1;
+
+    // swap first and second, optimization to have less iterations, ugly code
+    // here
+    if(generic_u_cmp(first, second) == 1) {
+        clone_first = generic_clone(second);
+        clone_second = generic_clone(first);
+        clone_second_instance = clone_second->private_data;
+        tmp = generic_clone(second);
+        first->ops->free_private(first);
+        first->private_data = move(&tmp->private_data);
+        first->ops = tmp->ops;
+        first->type = tmp->type;
+    }
 
     clone_second_instance->sign = 0;
     generic_sub(clone_second, one);
@@ -514,8 +534,8 @@ int bignum_mul(struct number *first, struct number *second)
         generic_add(first, clone_first);
         generic_sub(clone_second, one);
     }
-
-    first_instance->sign ^= second_instance->sign;
+    result_instance = first->private_data;
+    result_instance->sign = result_sign;
 
     return 0;
 }
@@ -547,6 +567,9 @@ int bignum_div(struct number *first, struct number *second)
     result_instance->sign = first_instance->sign ^ second_instance->sign;
     first_instance = move(&result->private_data);
 
+    cut_bignum_linked_list(
+        linked_list_get_tail(first_instance->bignum_elem_linked_list));
+
     first->ops->free_private(first);
 
     first->private_data = move((void **)&first_instance);
@@ -558,14 +581,12 @@ int bignum_rem(struct number *first, struct number *second)
     struct bignum_instance *first_instance = first->private_data;
     struct bignum_instance *second_instance = second->private_data;
     _free_custom_number_ struct number *clone_second = generic_clone(second);
-    _free_custom_number_ struct number *one =
-        make_number_from_int(NUMBER_TYPE_BIGNUM, 1);
     _free_custom_number_ struct number *zero =
         make_number_from_int(NUMBER_TYPE_BIGNUM, 0);
     struct bignum_instance *clone_second_instance = clone_second->private_data;
     int cmp = -2;
 
-    if(!(clone_second && one && zero))
+    if(!(clone_second && zero))
         return 1;
 
     if(generic_is_zero(second))
@@ -578,6 +599,10 @@ int bignum_rem(struct number *first, struct number *second)
 
     if(generic_cmp(first, zero) == 1)
         generic_add(first, clone_second);
+
+    first_instance = first->private_data;
+    cut_bignum_linked_list(
+        linked_list_get_tail(first_instance->bignum_elem_linked_list));
 
     return 0;
 }
@@ -612,6 +637,14 @@ int bignum_cmp(struct number *first, struct number *second)
     struct node *second_current_node =
         linked_list_get_tail(instance_second->bignum_elem_linked_list);
 
+    cut_bignum_linked_list(first_current_node);
+    cut_bignum_linked_list(second_current_node);
+
+    first_current_node =
+        linked_list_get_tail(instance_first->bignum_elem_linked_list);
+    second_current_node =
+        linked_list_get_tail(instance_second->bignum_elem_linked_list);
+
     if(instance_first->sign != instance_second->sign) {
         cmp = instance_first->sign == 1 ? 1 : -1;
         return cmp;
@@ -631,6 +664,16 @@ int bignum_cmp(struct number *first, struct number *second)
         second_current_node = second_current_node->prev;
     }
 
+    while(first_current_node && second_current_node) {
+        first_current_node = first_current_node->prev;
+        second_current_node = second_current_node->prev;
+    }
+
+    if(first_current_node)
+        cmp = -1;
+    if(second_current_node)
+        cmp = 1;
+
     return cmp;
 }
 
@@ -644,14 +687,31 @@ int bignum_u_cmp(struct number *first, struct number *second)
     struct node *second_current_node =
         linked_list_get_tail(instance_second->bignum_elem_linked_list);
 
+    cut_bignum_linked_list(first_current_node);
+    cut_bignum_linked_list(second_current_node);
+
+    first_current_node =
+        linked_list_get_tail(instance_first->bignum_elem_linked_list);
+    second_current_node =
+        linked_list_get_tail(instance_second->bignum_elem_linked_list);
+
     while(first_current_node && second_current_node) {
         // we don't break on cmp = *; so we can also determine is the numbers
         // are the same length
-        if(first_current_node->data > second_current_node->data)
+        if(first_current_node->data > second_current_node->data) {
             cmp = -1;
-        if(first_current_node->data < second_current_node->data)
+            break;
+        }
+        if(first_current_node->data < second_current_node->data) {
             cmp = 1;
+            break;
+        }
 
+        first_current_node = first_current_node->prev;
+        second_current_node = second_current_node->prev;
+    }
+
+    while(first_current_node && second_current_node) {
         first_current_node = first_current_node->prev;
         second_current_node = second_current_node->prev;
     }
@@ -662,78 +722,6 @@ int bignum_u_cmp(struct number *first, struct number *second)
         cmp = 1;
 
     return cmp;
-}
-
-struct number *bignum_gcd(struct number *first, struct number *second)
-{
-
-    int err = 0;
-    _free_custom_number_ struct number *one =
-        make_number_from_int(first->type, 1);
-    _free_custom_number_ struct number *tmp_num = NULL;
-    _free_custom_number_ struct number *two =
-        make_number_from_int(first->type, 2);
-    struct number *gcd = NULL;
-    bool continue_looking_for_gcd = 0;
-    int cmp = generic_cmp(first, second);
-
-    switch(cmp) {
-    case 0:
-    case -1: {
-        gcd = generic_clone(second);
-        break;
-    }
-    case 1: {
-        gcd = generic_clone(first);
-        break;
-    }
-    default:
-        return NULL;
-    }
-
-    if(generic_get_sign(gcd))
-        generic_flip_sign(gcd);
-
-    if(current_log_level == LOG_DEBUG) {
-        logger(LOG_DEBUG, stdout, "gcd starting point: ");
-        gcd->ops->print(stdout, gcd);
-        puts("");
-    }
-
-    while(1) {
-        continue_looking_for_gcd = 0;
-
-        tmp_num = generic_clone(second);
-        if(!tmp_num)
-            return NULL;
-        err = generic_rem(tmp_num, gcd);
-        if(err)
-            return NULL;
-        errno = 0;
-        continue_looking_for_gcd |= (generic_is_zero(tmp_num) == 0);
-        if(errno)
-            return NULL;
-
-        tmp_num = generic_clone(first);
-        if(!tmp_num)
-            return NULL;
-        err = generic_rem(tmp_num, gcd);
-        if(err)
-            return NULL;
-        errno = 0;
-        continue_looking_for_gcd |= (generic_is_zero(tmp_num) == 0);
-        if(errno)
-            return NULL;
-
-        if(!continue_looking_for_gcd)
-            break;
-
-        err = generic_sub(gcd, one);
-        if(err)
-            return NULL;
-    }
-
-    return gcd;
 }
 
 void bignum_free_private(struct number *self)
@@ -769,7 +757,6 @@ struct number_type_ops bignum_ops = {
 
     .cmp = bignum_cmp,
     .u_cmp = bignum_u_cmp,
-    .gcd = bignum_gcd,
 
     .add = bignum_add,
     .sub = bignum_sub,
