@@ -1,4 +1,5 @@
 #include <custom_numbers/generic.h>
+#include <custom_numbers/helper.h>
 #include <custom_numbers/logger.h>
 #include <errno.h>
 #include <stddef.h>
@@ -541,7 +542,12 @@ int generic_u_cmp(struct number *first, struct number *second)
 }
 struct number *generic_gcd(struct number *first, struct number *second)
 {
+    int err = 0;
+    _free_custom_number_ struct number *a = generic_clone(first);
+    _free_custom_number_ struct number *b = generic_clone(second);
+    _free_custom_number_ struct number *a_copy = NULL;
     struct number *ret = NULL;
+
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, "gcd(");
         first->ops->print(stdout, first);
@@ -549,7 +555,22 @@ struct number *generic_gcd(struct number *first, struct number *second)
         first->ops->print(stdout, second);
         printf(")");
     }
-    ret = first->ops->gcd(first, second);
+
+    while(!generic_is_zero(b)) {
+        a_copy = generic_clone(a);
+        if(!a_copy)
+            goto done;
+        a = generic_clone(b);
+        if(!a)
+            goto done;
+        err = generic_rem(a_copy, b);
+        if(err)
+            goto done;
+        b = move((void **)&a_copy);
+    }
+    ret = move((void **)&b);
+
+done:
     if(current_log_level == LOG_DEBUG) {
         logger(LOG_DEBUG, stdout, " = ");
         if(!ret)
