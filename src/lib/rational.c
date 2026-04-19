@@ -137,6 +137,8 @@ int rational_print(FILE *stream, struct number *self)
     struct number *numerator = self_rational->numerator;
     struct number *denominator = self_rational->denominator;
 
+    if(self_rational->sign)
+        printf("-");
     printf("(");
     ret += numerator->ops->print(stream, numerator);
     printf(")");
